@@ -144,6 +144,79 @@ export class Service {
         )
     }
 
+    //likes
+
+    async likePost(postId, userId) {
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteLikeCollectionId,
+                ID.unique(),
+                {
+                    postid: postId,
+                    userid: userId
+                }
+            );
+        } catch (error) {
+            console.log("Appwrite service :: likePost :: error", error);
+        }
+    }
+
+
+
+
+    async unlikePost(likeId) {
+        try {
+            return await this.databases.deleteDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteLikeCollectionId,
+                likeId
+            );
+        } catch (error) {
+            console.log("Appwrite service :: unlikePost :: error", error);
+        }
+    }
+
+    async getLikes(postid) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteLikeCollectionId,
+                [Query.equal("postid", postid)]
+            );
+        } catch (error) {
+            console.log("Appwrite service :: getLikes :: error", error);
+            return { documents: [] };
+        }
+    }
+
+    //comments
+
+    async addComment(data) {
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCommentCollectionId,
+                ID.unique(),
+                data
+            );
+        } catch (error) {
+            console.log("Appwrite service :: addComment :: error", error);
+        }
+    }
+
+    async getComments(postid) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCommentCollectionId,
+                [Query.equal("postid", postid)]
+            );
+        } catch (error) {
+            console.log("Appwrite service :: getComments :: error", error);
+            return { documents: [] };
+        }
+    }
 
 
 

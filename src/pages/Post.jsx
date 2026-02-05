@@ -7,20 +7,29 @@ import { useSelector } from "react-redux";
 
 export default function Post() {
     const [post, setPost] = useState(null);
+
+    //likes 
+    const [likes, setLikes] = useState([]);
+    const [liked, setLiked] = useState(false);
+
+    //comments
+    const [comments, setComments] = useState([]);
+    const [commentText, setCommentText] = useState("");
+
     const { slug } = useParams();
     const navigate = useNavigate();
 
     const userData = useSelector((state) => state.auth.userData);
     const authStatus = useSelector((state) => state.auth.status);
 
-    // SAFE ownership check (re-evaluates every render)
+    // safe ownership check
     const isAuthor = Boolean(
         post?.userid &&
         userData?.$id &&
         post.userid === userData.$id
     );
 
-    //  Fetch post ONLY based on slug
+    //  fetch post only based on slug
     useEffect(() => {
         if (!slug) {
             navigate("/");
@@ -34,7 +43,70 @@ export default function Post() {
 
     }, [slug, navigate]);
 
-    // Guarded delete
+
+    //load likes and comments
+    useEffect(() => {
+        if (!post) return;
+
+        appwriteService.getLikes(post.$id).then((res) => {
+            setLikes(res.documents);
+            setLiked(
+                res.documents.some(l => l.userid === userData?.$id)
+            );
+        });
+
+        appwriteService.getComments(post.$id)
+            .then(res => setComments(res.documents));
+
+    }, [post, userData]);
+
+    const handleLike = async () => {
+        if (!userData) return alert("Login first");
+
+        if (liked) {
+            const myLike = likes.find(
+                (l) => l.userid === userData.$id
+            );
+
+            if (myLike) {
+                await appwriteService.unlikePost(myLike.$id);
+            }
+
+        } else {
+            await appwriteService.likePost(post.$id, userData.$id);
+        }
+
+        const res = await appwriteService.getLikes(post.$id);
+
+        setLikes(res.documents);
+        setLiked(
+            res.documents.some(l => l.userid === userData.$id)
+        );
+    };
+
+
+    //add comment
+
+    const submitComment = async () => {
+        if (!userData) return alert("Login first");
+        if (!commentText.trim()) return;
+
+        await appwriteService.addComment({
+            postid: post.$id,
+            userid: userData.$id,
+            username: userData.name || "User",
+            content: commentText
+        });
+
+        setCommentText("");
+
+        const res = await appwriteService.getComments(post.$id);
+        setComments(res.documents);
+    };
+
+
+
+    //  delete post
     const deletePost = () => {
         if (!isAuthor) {
             alert("Not allowed");
@@ -50,9 +122,9 @@ export default function Post() {
     };
 
 
-    console.log("post userid:", post?.userid);
-    console.log("logged userid:", userData?.$id);
-    console.log("isAuthor:", isAuthor);
+    // console.log("post userid:", post?.userid);
+    // console.log("logged userid:", userData?.$id);
+    // console.log("isAuthor:", isAuthor);
 
     if (!post) return null;
 
@@ -94,8 +166,54 @@ export default function Post() {
                     </h1>
                 </div>
 
+                <div className="mb-6">
+                    <button
+                        onClick={handleLike}
+                        className={`px-4 py-2 rounded-lg ${liked
+                            ? "bg-red-500 text-white"
+                            : "bg-gray-200"
+                            }`}
+                    >
+                        ❤️ {likes.length}
+                    </button>
+                </div>
+
                 <div className="browser-css">
                     {parse(post.content)}
+                </div>
+
+                <div className="max-w-2xl">
+
+                    <h2 className="text-xl font-semibold mb-2">
+                        Comments ({comments.length})
+                    </h2>
+
+                    <textarea
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        className="w-full border p-2 rounded"
+                        placeholder="Write a comment..."
+                    />
+
+                    <button
+                        onClick={submitComment}
+                        className="mt-2 bg-blue-600 text-white px-4 py-2 rounded"
+                    >
+                        Post Comment
+                    </button>
+
+                    {comments.map((c) => (
+                        <div
+                            key={c.$id}
+                            className="mt-4 p-3 bg-gray-100 rounded"
+                        >
+                            <p className="font-semibold">
+                                {c.username}
+                            </p>
+                            <p>{c.content}</p>
+                        </div>
+                    ))}
+
                 </div>
 
             </Container>
