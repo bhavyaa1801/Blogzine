@@ -1,16 +1,167 @@
-# React + Vite
+# Blogzine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Blogzine is a modern full-stack blogging platform where users can create, publish, and interact with blog posts. It provides authentication, post management, likes, and comments using **React, Appwrite, and TailwindCSS**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+### Authentication
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* User Signup and Login
+* Secure authentication using **Appwrite Auth**
+* Protected routes for authenticated users
 
-## Expanding the ESLint configuration
+### Blog Management
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* Create blog posts
+* Edit posts
+* Delete posts
+* View all posts
+
+### Social Interactions
+
+* Like / Unlike posts
+* Comment on posts
+* Real-time like count
+
+### Media Support
+
+* Upload featured images for blog posts
+* Image storage using **Appwrite Storage**
+
+### Modern UI
+
+* Responsive design
+* Clean landing page
+* TailwindCSS styling
+* Mobile-friendly layout
+
+---
+
+## Tech Stack
+
+**Frontend**
+
+* React
+* React Router
+* Redux Toolkit
+* TailwindCSS
+
+**Backend / BaaS**
+
+* Appwrite
+
+**Other Libraries**
+
+* html-react-parser
+* Vite
+
+---
+
+## Project Structure
+
+```
+Blogzine
+│
+├── public
+│   └── favicon / images
+│
+├── src
+│   ├── appwrite        # Appwrite configuration and services
+│   ├── components      # Reusable UI components
+│   ├── pages           # Page components (Home, Post, AddPost etc.)
+│   ├── store           # Redux state management
+│   ├── assets          # Images and icons
+│   └── main.jsx        # App entry point
+│
+└── index.html
+```
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/blogzine.git
+```
+
+Navigate to the project folder:
+
+```bash
+cd blogzine
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
+
+```bash
+npm run dev
+```
+
+---
+
+## Environment Setup
+
+Create a **.env** file and add your Appwrite configuration:
+
+```
+VITE_APPWRITE_URL=your_appwrite_endpoint
+VITE_APPWRITE_PROJECT_ID=your_project_id
+VITE_APPWRITE_DATABASE_ID=your_database_id
+VITE_APPWRITE_COLLECTION_ID=your_posts_collection
+VITE_APPWRITE_LIKE_COLLECTION_ID=your_likes_collection
+VITE_APPWRITE_COMMENT_COLLECTION_ID=your_comments_collection
+VITE_APPWRITE_BUCKET_ID=your_storage_bucket
+```
+
+---
+
+## Appwrite Database Structure
+
+### Posts Collection
+
+```
+title
+content
+featuredimage
+userid
+status
+```
+
+### Likes Collection
+
+```
+postid
+userid
+```
+
+Unique index:
+
+```
+postid + userid
+```
+
+### Comments Collection
+
+```
+postid
+userid
+username
+content
+```
+---
+
+## Future Improvements
+* Post categories and tags
+* Rich text editor improvements
+* Notifications system
+
+---
