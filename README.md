@@ -84,8 +84,8 @@ Blogzine
 
 Clone the repository:
 
-```bash
-git clone https://github.com/yourusername/blogzine.git
+```bash[
+git clone https://github.com/bhavyaa1801/Blogzine
 ```
 
 Navigate to the project folder:
